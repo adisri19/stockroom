@@ -6,6 +6,7 @@ import ProtectedRoute from '../../components/auth/ProtectedRoute';
 import ProductTable from '../../components/products/ProductTable';
 import ProductCard from '../../components/products/ProductCard';
 import ProductForm from '../../components/products/ProductForm';
+import DeleteModal from '../../components/products/DeleteModal';
 import Pagination from '../../components/ui/Pagination';
 import Loader from '../../components/ui/Loader';
 import useProducts from '../../hooks/useProducts';
@@ -36,9 +37,10 @@ function ProductListContent() {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
-  // Modal states for Add and Edit
+  // Modal states for Add, Edit, and Delete
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [deletingProduct, setDeletingProduct] = useState(null);
 
   // Local state for instant input feedback, debounced by 400ms
   const [searchInput, setSearchInput] = useState(q);
@@ -148,6 +150,13 @@ function ProductListContent() {
       prev.map((item) => (item.id === updatedProduct.id ? updatedProduct : item))
     );
     setEditingProduct(null);
+  };
+
+  // Optimistic Delete Mutation: Remove matching product, decrement total by 1
+  const handleDeleteSuccess = (deletedId) => {
+    setProducts((prev) => prev.filter((item) => item.id !== deletedId));
+    setTotal((prev) => Math.max(0, prev - 1));
+    setDeletingProduct(null);
   };
 
   const isSearchDisabled = Boolean(category);
@@ -307,6 +316,7 @@ function ProductListContent() {
           <ProductTable
             products={products}
             onEdit={(prod) => setEditingProduct(prod)}
+            onDelete={(prod) => setDeletingProduct(prod)}
           />
 
           <div className="grid grid-cols-1 gap-4 md:hidden">
@@ -315,6 +325,7 @@ function ProductListContent() {
                 key={product.id}
                 product={product}
                 onEdit={(prod) => setEditingProduct(prod)}
+                onDelete={(prod) => setDeletingProduct(prod)}
               />
             ))}
           </div>
@@ -346,6 +357,15 @@ function ProductListContent() {
           categories={categories}
           onSuccess={handleEditSuccess}
           onClose={() => setEditingProduct(null)}
+        />
+      )}
+
+      {/* Delete Product Modal */}
+      {deletingProduct && (
+        <DeleteModal
+          product={deletingProduct}
+          onClose={() => setDeletingProduct(null)}
+          onSuccess={handleDeleteSuccess}
         />
       )}
     </div>
