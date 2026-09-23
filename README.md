@@ -2,6 +2,8 @@
 
 A lightweight, high-performance product inventory admin dashboard built with Next.js 14 (App Router), React 18, Tailwind CSS, and Axios. Designed and built completely from scratch without component libraries or third-party table/query dependencies.
 
+🚀 **Live Production Deployment:** [https://stockroom-sepia.vercel.app](https://stockroom-sepia.vercel.app)
+
 ---
 
 ## 1. Setup
