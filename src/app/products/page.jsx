@@ -9,6 +9,7 @@ import Pagination from '../../components/ui/Pagination';
 import Loader from '../../components/ui/Loader';
 import useProducts from '../../hooks/useProducts';
 import useDebounce from '../../hooks/useDebounce';
+import { getCategories } from '../../api/categories';
 
 function ProductListContent() {
   const searchParams = useSearchParams();
@@ -24,18 +25,45 @@ function ProductListContent() {
     limit,
     q,
     category,
+    sortBy,
+    order,
   } = useProducts();
+
+  // Categories list
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Local state for instant input feedback, debounced by 400ms
   const [searchInput, setSearchInput] = useState(q);
   const debouncedQuery = useDebounce(searchInput, 400);
 
-  // Sync search input if URL changes externally (e.g. back button or category selection)
+  // Load categories once on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function loadCat() {
+      try {
+        const catList = await getCategories();
+        if (isMounted) {
+          setCategories(Array.isArray(catList) ? catList : []);
+        }
+      } catch (err) {
+        console.error('Failed to load categories:', err);
+      } finally {
+        if (isMounted) setCategoriesLoading(false);
+      }
+    }
+    loadCat();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Sync search input if URL changes externally
   useEffect(() => {
     setSearchInput(q);
   }, [q]);
 
-  // Update URL helper function
+  // Update URL helper function (router.push with updated params)
   const updateUrlParams = (newParams) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(newParams).forEach(([key, value]) => {
@@ -51,16 +79,59 @@ function ProductListContent() {
   };
 
   // Push debounced search query to URL as single source of truth
+  // Mutual exclusion: typing in search clears category!
   useEffect(() => {
-    if (debouncedQuery.trim() !== q) {
-      updateUrlParams({
-        q: debouncedQuery.trim() || null,
-        page: 1, // Reset to page 1 on new search
-      });
+    const trimmed = debouncedQuery.trim();
+    if (trimmed !== q) {
+      if (trimmed) {
+        updateUrlParams({
+          q: trimmed,
+          category: null, // Clear category when searching
+          page: 1,
+        });
+      } else {
+        updateUrlParams({
+          q: null,
+          page: 1,
+        });
+      }
     }
   }, [debouncedQuery]);
 
+  // Handle category selection
+  // Mutual exclusion: selecting category clears search!
+  const handleCategoryChange = (selectedCategory) => {
+    if (selectedCategory) {
+      setSearchInput('');
+      updateUrlParams({
+        category: selectedCategory,
+        q: null, // Clear search when category selected
+        page: 1,
+      });
+    } else {
+      updateUrlParams({
+        category: null,
+        page: 1,
+      });
+    }
+  };
+
+  // Handle sort change
+  const handleSortChange = (value) => {
+    if (!value) {
+      updateUrlParams({ sortBy: null, order: null, page: 1 });
+      return;
+    }
+    const [newSortBy, newOrder] = value.split(':');
+    updateUrlParams({
+      sortBy: newSortBy,
+      order: newOrder || 'asc',
+      page: 1,
+    });
+  };
+
   const isSearchDisabled = Boolean(category);
+  const currentSortValue = sortBy ? `${sortBy}:${order}` : '';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -71,8 +142,9 @@ function ProductListContent() {
         </div>
       </div>
 
-      {/* Controls Bar: Search */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      {/* Controls Bar: Search, Category, and Sort */}
+      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        {/* Search Input with Mutual Exclusion */}
         <div className="relative flex-1 max-w-md">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
             <svg
@@ -98,7 +170,7 @@ function ProductListContent() {
             placeholder={
               isSearchDisabled
                 ? 'Clear category to search'
-                : 'Search products by title or brand...'
+                : 'Search products by title...'
             }
             title={isSearchDisabled ? 'Clear category to search' : ''}
             className={`w-full pl-9 pr-9 py-2 border rounded-lg text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
@@ -130,6 +202,55 @@ function ProductListContent() {
             </div>
           )}
         </div>
+
+        {/* Filters: Category & Sort */}
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
+          {/* Category Dropdown */}
+          <div className="w-full sm:w-auto">
+            <label htmlFor="category-filter" className="sr-only">
+              Filter by category
+            </label>
+            <select
+              id="category-filter"
+              value={category}
+              onChange={(e) => handleCategoryChange(e.target.value)}
+              disabled={categoriesLoading}
+              className="w-full sm:w-48 py-2 px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 capitalize"
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat) => {
+                const slug = typeof cat === 'object' ? cat.slug || cat.name : cat;
+                const name = typeof cat === 'object' ? cat.name || cat.slug : cat;
+                return (
+                  <option key={slug} value={slug}>
+                    {name}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="w-full sm:w-auto">
+            <label htmlFor="sort-select" className="sr-only">
+              Sort by
+            </label>
+            <select
+              id="sort-select"
+              value={currentSortValue}
+              onChange={(e) => handleSortChange(e.target.value)}
+              className="w-full sm:w-48 py-2 px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="">Sort: Default</option>
+              <option value="price:asc">Price: Low to High</option>
+              <option value="price:desc">Price: High to Low</option>
+              <option value="rating:desc">Rating: High to Low</option>
+              <option value="rating:asc">Rating: Low to High</option>
+              <option value="title:asc">Title: A to Z</option>
+              <option value="title:desc">Title: Z to A</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {loading ? (
@@ -141,7 +262,11 @@ function ProductListContent() {
       ) : products.length === 0 ? (
         <div className="p-12 text-center bg-white rounded-xl border border-gray-200">
           <p className="text-gray-500 text-sm">
-            {q ? `No products found for "${q}"` : 'No products found'}
+            {q
+              ? `No products found for "${q}"`
+              : category
+              ? `No products found in category "${category}"`
+              : 'No products found'}
           </p>
         </div>
       ) : (
