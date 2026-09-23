@@ -42,17 +42,19 @@ No external environment variables are required. All requests target the DummyJSO
 - [x] **Authentication Context (`src/context/AuthContext.jsx`)** with persistent session restore from `localStorage`, login, logout, and token management.
 - [x] **Route Protection (`src/components/auth/ProtectedRoute.jsx`)** guarding internal pages and showing a spinner during session validation.
 - [x] **Sticky Navbar (`src/components/layout/Navbar.jsx`)** showing brand name, logged-in user credentials/avatar, and logout button.
-- [x] **Product Table (`src/components/products/ProductTable.jsx`)** for desktop (`md+`) with striped rows, hover highlight, image thumbnails, `$xx.xx` price formatting, star ratings, and edit/delete triggers.
+- [x] **Product Table (`src/components/products/ProductTable.jsx`)** for desktop (`md+`) with striped rows, hover highlight, image thumbnails with SVG fallback, `$xx.xx` price formatting, star ratings, and edit/delete triggers.
 - [x] **Mobile Product Cards (`src/components/products/ProductCard.jsx`)** for small viewports (`< md`) with matching product attributes and action buttons.
 - [x] **Pagination Component (`src/components/ui/Pagination.jsx`)** with "Showing X–Y of Z", page sizes (10, 20, 50), bounded prev/next buttons, and windowed page numbers with ellipsis.
 - [x] **Generic Debounce Hook (`src/hooks/useDebounce.js`)** applying a 400ms delay to search input.
 - [x] **Product Data Hook (`src/hooks/useProducts.js`)** with pagination, query routing, client-side sorting, and race condition prevention.
 - [x] **Category Filter & Sort (`src/app/products/page.jsx`)** supporting price, rating, and title sorting with mutual exclusion on search.
+- [x] **Active Filter Indicators & Quick Reset** visual pill tags showing applied search, category, or sort parameters with one-click remove and reset all.
 - [x] **Product Detail View (`src/app/products/[id]/page.jsx`)** with interactive image gallery switcher, full metadata, and customer reviews.
 - [x] **Custom Not Found View (`src/app/products/[id]/not-found.jsx`)** for missing or invalid product IDs.
-- [x] **Product Form (`src/components/products/ProductForm.jsx`)** supporting both Add and Edit with strict client-side validation, inline red errors, and double-submit prevention.
-- [x] **Delete Confirmation Modal (`src/components/products/DeleteModal.jsx`)** with product name prompt, cancel action, and delete confirmation.
+- [x] **Product Form (`src/components/products/ProductForm.jsx`)** supporting both Add and Edit with strict client-side validation, inline red errors, double-submit prevention, and Escape key dismissal.
+- [x] **Delete Confirmation Modal (`src/components/products/DeleteModal.jsx`)** with product name prompt, cancel action, keyboard safety, and delete confirmation.
 - [x] **Optimistic UI Updates** on product addition, update, and deletion without redundant API re-fetching.
+- [x] **Toast Notifications (`src/components/ui/Toast.jsx`)** providing instantaneous accessible feedback on product creation, updates, and removals.
 - [x] **Accessible UI Feedback States** including `Loader.jsx`, `ErrorState.jsx` with retry callback, and `EmptyState.jsx` with search term context and filter reset.
 
 ---
