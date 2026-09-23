@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { addProduct, updateProduct } from '../../api/products';
 
 export default function ProductForm({
@@ -10,6 +10,7 @@ export default function ProductForm({
   onClose,
 }) {
   const isEditing = Boolean(product && product.id);
+  const titleInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: product?.title || '',
@@ -24,6 +25,22 @@ export default function ProductForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !isSubmitting) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSubmitting, onClose]);
+
+  // Autofocus the title input on mount
+  useEffect(() => {
+    titleInputRef.current?.focus();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -35,18 +52,15 @@ export default function ProductForm({
   const validate = () => {
     const newErrors = {};
 
-    // title (required)
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
     }
 
-    // price (required, number > 0)
     const numPrice = Number(formData.price);
     if (!formData.price || isNaN(numPrice) || numPrice <= 0) {
       newErrors.price = 'Price is required and must be greater than 0';
     }
 
-    // stock (required, integer >= 0)
     const numStock = Number(formData.stock);
     if (
       formData.stock === '' ||
@@ -57,7 +71,6 @@ export default function ProductForm({
       newErrors.stock = 'Stock is required and must be an integer (0 or greater)';
     }
 
-    // category (required)
     if (!formData.category.trim()) {
       newErrors.category = 'Category is required';
     }
@@ -68,7 +81,6 @@ export default function ProductForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Double submit prevention guard
     if (isSubmitting) return;
 
     if (!validate()) {
@@ -91,7 +103,6 @@ export default function ProductForm({
       let savedProduct;
       if (isEditing) {
         savedProduct = await updateProduct(product.id, payload);
-        // Ensure id and existing fields like thumbnail/images remain preserved
         savedProduct = { ...product, ...savedProduct, ...payload };
       } else {
         savedProduct = await addProduct(payload);
@@ -119,8 +130,19 @@ export default function ProductForm({
     }
   };
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget && !isSubmitting) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      onClick={handleBackdropClick}
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+    >
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50/50">
           <h2 className="text-lg font-bold text-gray-900">
@@ -130,7 +152,7 @@ export default function ProductForm({
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition-colors disabled:opacity-50"
+            className="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
             aria-label="Close modal"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,6 +174,7 @@ export default function ProductForm({
               Title <span className="text-red-500">*</span>
             </label>
             <input
+              ref={titleInputRef}
               id="title"
               name="title"
               type="text"
@@ -297,14 +320,14 @@ export default function ProductForm({
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

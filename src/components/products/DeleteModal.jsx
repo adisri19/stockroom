@@ -1,16 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { deleteProduct } from '../../api/products';
 
 export default function DeleteModal({ product, onClose, onSuccess }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState('');
+  const cancelButtonRef = useRef(null);
+
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !isDeleting) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDeleting, onClose]);
+
+  // Autofocus cancel button on open for keyboard safety
+  useEffect(() => {
+    cancelButtonRef.current?.focus();
+  }, []);
 
   if (!product) return null;
 
   const handleConfirmDelete = async () => {
-    // Double submit prevention guard
     if (isDeleting) return;
 
     setIsDeleting(true);
@@ -33,12 +49,19 @@ export default function DeleteModal({ product, onClose, onSuccess }) {
     }
   };
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget && !isDeleting) {
+      onClose();
+    }
+  };
+
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="delete-dialog-title"
-      className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity"
     >
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 p-6 space-y-4">
         <div className="flex items-center gap-3">
@@ -84,10 +107,11 @@ export default function DeleteModal({ product, onClose, onSuccess }) {
 
         <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
           <button
+            ref={cancelButtonRef}
             type="button"
             onClick={onClose}
             disabled={isDeleting}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
           >
             Cancel
           </button>
@@ -95,7 +119,7 @@ export default function DeleteModal({ product, onClose, onSuccess }) {
             type="button"
             onClick={handleConfirmDelete}
             disabled={isDeleting}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isDeleting ? (
               <>
