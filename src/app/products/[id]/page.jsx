@@ -38,12 +38,8 @@ function ProductDetailContent() {
         }
       } catch (err) {
         if (err.name !== 'CanceledError' && isMounted) {
-          if (err.response?.status === 404) {
-            setIsNotFound(true);
-          } else {
-            console.error('Error fetching product detail:', err);
-            setIsNotFound(true);
-          }
+          console.error('Error fetching product detail:', err);
+          setIsNotFound(true);
         }
       } finally {
         if (isMounted) {
@@ -61,7 +57,7 @@ function ProductDetailContent() {
   }, [id]);
 
   if (loading) {
-    return <Loader text="Loading product details..." />;
+    return <Loader text="Loading product specifications..." />;
   }
 
   if (isNotFound || !product) {
@@ -84,7 +80,7 @@ function ProductDetailContent() {
       <div>
         <Link
           href="/products"
-          className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-indigo-400 bg-slate-900/60 hover:bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl transition-all shadow-sm"
         >
           <svg
             className="w-4 h-4"
@@ -99,23 +95,23 @@ function ProductDetailContent() {
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             />
           </svg>
-          Back to Products
+          Back to Inventory
         </Link>
       </div>
 
       {/* Main Product Info Grid */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 lg:p-8">
+      <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-800/80 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 lg:p-10">
         {/* Left Column: Image Switcher */}
         <div className="space-y-4">
-          <div className="aspect-square w-full rounded-xl bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center p-4">
+          <div className="aspect-square w-full rounded-2xl bg-slate-950/80 border border-slate-800 overflow-hidden flex items-center justify-center p-6 relative group">
             {activeImage ? (
               <img
                 src={activeImage}
                 alt={product.title}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
               />
             ) : (
-              <div className="text-gray-400 text-sm">No image available</div>
+              <div className="text-slate-600 text-xs font-semibold">No image available</div>
             )}
           </div>
 
@@ -127,10 +123,10 @@ function ProductDetailContent() {
                   key={`img-thumb-${index}`}
                   type="button"
                   onClick={() => setSelectedImageIndex(index)}
-                  className={`w-16 h-16 rounded-lg bg-gray-50 border-2 overflow-hidden flex-shrink-0 transition-all ${
+                  className={`w-16 h-16 rounded-xl bg-slate-950/80 border-2 overflow-hidden flex-shrink-0 transition-all ${
                     selectedImageIndex === index
-                      ? 'border-indigo-600 ring-2 ring-indigo-100'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] scale-105'
+                      : 'border-slate-800 opacity-60 hover:opacity-100 hover:border-slate-700'
                   }`}
                   aria-label={`View image ${index + 1}`}
                 >
@@ -147,65 +143,74 @@ function ProductDetailContent() {
 
         {/* Right Column: Details */}
         <div className="flex flex-col justify-between space-y-6">
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 capitalize border border-indigo-100">
+              <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-violet-500/10 text-violet-300 capitalize border border-violet-500/20">
                 {product.category || 'General'}
               </span>
               {product.brand && (
-                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
                   Brand: {product.brand}
                 </span>
               )}
               <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold ${
                   product.stock > 10
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20'
                     : product.stock > 0
-                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                    : 'bg-red-50 text-red-700 border border-red-200'
+                    ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
+                    : 'bg-rose-500/10 text-rose-300 border border-rose-500/20'
                 }`}
               >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    product.stock > 10
+                      ? 'bg-emerald-400'
+                      : product.stock > 0
+                      ? 'bg-amber-400'
+                      : 'bg-rose-400 animate-pulse'
+                  }`}
+                />
                 {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
               {product.title}
             </h1>
 
             {/* Rating */}
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 bg-amber-50 text-amber-800 px-2.5 py-1 rounded-md border border-amber-200 text-sm font-semibold">
+              <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-300 px-3 py-1 rounded-lg border border-amber-500/20 text-xs font-bold">
                 <svg
-                  className="w-4 h-4 fill-current text-amber-500"
+                  className="w-4 h-4 fill-current text-amber-400"
                   viewBox="0 0 20 20"
                 >
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
                 {Number(product.rating || 0).toFixed(2)}
               </div>
-              <span className="text-sm text-gray-500">
-                ({reviews.length} customer review{reviews.length === 1 ? '' : 's'})
+              <span className="text-xs text-slate-400 font-medium">
+                ({reviews.length} verified review{reviews.length === 1 ? '' : 's'})
               </span>
             </div>
 
             {/* Price */}
-            <div className="pt-2">
-              <span className="text-3xl font-bold text-gray-900">
+            <div className="pt-2 flex items-baseline gap-3">
+              <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
                 {formattedPrice}
               </span>
               {product.discountPercentage > 0 && (
-                <span className="ml-3 text-sm font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
                   {product.discountPercentage}% OFF
                 </span>
               )}
             </div>
 
             {/* Description */}
-            <div className="pt-4 border-t border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Description</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+            <div className="pt-4 border-t border-slate-800/80">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Description</h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
                 {product.description || 'No description provided.'}
               </p>
             </div>
@@ -214,13 +219,13 @@ function ProductDetailContent() {
       </div>
 
       {/* Reviews Section */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 lg:p-8 space-y-6">
-        <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+      <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-800/80 shadow-2xl p-6 lg:p-10 space-y-6">
+        <h2 className="text-xl font-bold text-white tracking-tight">
           Customer Reviews ({reviews.length})
         </h2>
 
         {reviews.length === 0 ? (
-          <p className="text-sm text-gray-500 italic">No reviews yet for this product.</p>
+          <p className="text-sm text-slate-500 italic">No reviews recorded yet for this item.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {reviews.map((rev, idx) => {
@@ -235,13 +240,13 @@ function ProductDetailContent() {
               return (
                 <div
                   key={`review-${idx}`}
-                  className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2"
+                  className="p-5 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900 text-sm">
-                      {rev.reviewerName || 'Anonymous'}
+                    <span className="font-bold text-white text-sm">
+                      {rev.reviewerName || 'Anonymous Reviewer'}
                     </span>
-                    <span className="text-xs text-gray-400">{formattedDate}</span>
+                    <span className="text-[11px] text-slate-500 font-medium">{formattedDate}</span>
                   </div>
 
                   <div className="flex items-center gap-1">
@@ -251,20 +256,20 @@ function ProductDetailContent() {
                         className={`w-3.5 h-3.5 ${
                           i < Math.round(rev.rating || 0)
                             ? 'text-amber-400 fill-current'
-                            : 'text-gray-300 fill-current'
+                            : 'text-slate-700 fill-current'
                         }`}
                         viewBox="0 0 20 20"
                       >
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
-                    <span className="ml-1 text-xs font-semibold text-gray-700">
+                    <span className="ml-1 text-xs font-bold text-slate-300">
                       {rev.rating}/5
                     </span>
                   </div>
 
-                  <p className="text-sm text-gray-700 leading-normal">
-                    "{rev.comment || 'No comment'}"
+                  <p className="text-xs text-slate-300 leading-relaxed italic">
+                    "{rev.comment || 'No comment provided'}"
                   </p>
                 </div>
               );

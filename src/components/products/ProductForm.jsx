@@ -141,18 +141,23 @@ export default function ProductForm({
       role="dialog"
       aria-modal="true"
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200"
     >
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50/50">
-          <h2 className="text-lg font-bold text-gray-900">
-            {isEditing ? 'Edit Product' : 'Add New Product'}
-          </h2>
+      <div className="bg-slate-900 border border-slate-800 shadow-[0_0_60px_-15px_rgba(99,102,241,0.3)] w-full max-w-lg rounded-3xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800/80 bg-slate-950/50">
+          <div>
+            <h2 className="text-lg font-bold text-white tracking-tight">
+              {isEditing ? 'Edit Product' : 'Add New Product'}
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {isEditing ? 'Modify product specifications' : 'Add an item to the global inventory'}
+            </p>
+          </div>
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="text-slate-400 hover:text-white p-1.5 rounded-xl bg-slate-800/40 hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
             aria-label="Close modal"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +167,7 @@ export default function ProductForm({
         </div>
 
         {submitError && (
-          <div className="mx-6 mt-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+          <div className="mx-6 mt-4 p-3.5 bg-rose-500/10 text-rose-300 text-sm rounded-xl border border-rose-500/30">
             {submitError}
           </div>
         )}
@@ -170,8 +175,8 @@ export default function ProductForm({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-              Title <span className="text-red-500">*</span>
+            <label htmlFor="title" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+              Title <span className="text-rose-400">*</span>
             </label>
             <input
               ref={titleInputRef}
@@ -182,20 +187,20 @@ export default function ProductForm({
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="e.g. Wireless Noise-Cancelling Headphones"
-              className={`mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              className={`block w-full px-3.5 py-2.5 bg-slate-950/80 border rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                 errors.title
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50/20'
-                  : 'border-gray-300 focus:border-indigo-500'
+                  ? 'border-rose-500/80 focus:border-rose-500 focus:ring-rose-500/30'
+                  : 'border-slate-800 focus:border-indigo-500'
               }`}
             />
             {errors.title && (
-              <p className="mt-1 text-xs text-red-600">{errors.title}</p>
+              <p className="mt-1 text-xs text-rose-400 font-medium">{errors.title}</p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="description" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
               Description
             </label>
             <textarea
@@ -206,15 +211,15 @@ export default function ProductForm({
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="Detailed description of features, materials, etc."
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500"
             />
           </div>
 
           {/* Price & Stock */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                Price ($) <span className="text-red-500">*</span>
+              <label htmlFor="price" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Price ($) <span className="text-rose-400">*</span>
               </label>
               <input
                 id="price"
@@ -226,20 +231,20 @@ export default function ProductForm({
                 onChange={handleChange}
                 disabled={isSubmitting}
                 placeholder="49.99"
-                className={`mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                className={`block w-full px-3.5 py-2.5 bg-slate-950/80 border rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                   errors.price
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50/20'
-                    : 'border-gray-300 focus:border-indigo-500'
+                    ? 'border-rose-500/80 focus:border-rose-500 focus:ring-rose-500/30'
+                    : 'border-slate-800 focus:border-indigo-500'
                 }`}
               />
               {errors.price && (
-                <p className="mt-1 text-xs text-red-600">{errors.price}</p>
+                <p className="mt-1 text-xs text-rose-400 font-medium">{errors.price}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="stock" className="block text-sm font-medium text-gray-700">
-                Stock <span className="text-red-500">*</span>
+              <label htmlFor="stock" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Stock <span className="text-rose-400">*</span>
               </label>
               <input
                 id="stock"
@@ -251,14 +256,14 @@ export default function ProductForm({
                 onChange={handleChange}
                 disabled={isSubmitting}
                 placeholder="25"
-                className={`mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                className={`block w-full px-3.5 py-2.5 bg-slate-950/80 border rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                   errors.stock
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50/20'
-                    : 'border-gray-300 focus:border-indigo-500'
+                    ? 'border-rose-500/80 focus:border-rose-500 focus:ring-rose-500/30'
+                    : 'border-slate-800 focus:border-indigo-500'
                 }`}
               />
               {errors.stock && (
-                <p className="mt-1 text-xs text-red-600">{errors.stock}</p>
+                <p className="mt-1 text-xs text-rose-400 font-medium">{errors.stock}</p>
               )}
             </div>
           </div>
@@ -266,8 +271,8 @@ export default function ProductForm({
           {/* Category & Brand */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                Category <span className="text-red-500">*</span>
+              <label htmlFor="category" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Category <span className="text-rose-400">*</span>
               </label>
               <select
                 id="category"
@@ -275,10 +280,10 @@ export default function ProductForm({
                 value={formData.category}
                 onChange={handleChange}
                 disabled={isSubmitting}
-                className={`mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm text-sm capitalize bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                className={`block w-full px-3.5 py-2.5 bg-slate-950/80 border rounded-xl text-sm text-white capitalize focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                   errors.category
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50/20'
-                    : 'border-gray-300 focus:border-indigo-500'
+                    ? 'border-rose-500/80 focus:border-rose-500 focus:ring-rose-500/30'
+                    : 'border-slate-800 focus:border-indigo-500'
                 }`}
               >
                 <option value="">Select a category</option>
@@ -286,19 +291,19 @@ export default function ProductForm({
                   const slug = typeof cat === 'object' ? cat.slug || cat.name : cat;
                   const name = typeof cat === 'object' ? cat.name || cat.slug : cat;
                   return (
-                    <option key={slug} value={slug}>
+                    <option key={slug} value={slug} className="bg-slate-900 text-white">
                       {name}
                     </option>
                   );
                 })}
               </select>
               {errors.category && (
-                <p className="mt-1 text-xs text-red-600">{errors.category}</p>
+                <p className="mt-1 text-xs text-rose-400 font-medium">{errors.category}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="brand" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="brand" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                 Brand
               </label>
               <input
@@ -309,29 +314,29 @@ export default function ProductForm({
                 onChange={handleChange}
                 disabled={isSubmitting}
                 placeholder="e.g. Acme Inc."
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="block w-full px-3.5 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500"
               />
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-3 pt-5 border-t border-slate-800/80">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="px-4 py-2.5 text-sm font-semibold text-slate-300 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-600 disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Saving...
                 </>
               ) : isEditing ? (

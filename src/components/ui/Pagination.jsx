@@ -33,25 +33,25 @@ export default function Pagination({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2 border-t border-gray-200 text-sm text-gray-700">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-4 bg-slate-900/50 backdrop-blur-xl border border-slate-800/80 rounded-2xl text-sm text-slate-400 shadow-lg">
       {/* Showing X–Y of Z and Limit selector */}
       <div className="flex flex-wrap items-center gap-4">
         <span>
-          Showing <span className="font-semibold text-gray-900">{start}</span>–
-          <span className="font-semibold text-gray-900">{end}</span> of{' '}
-          <span className="font-semibold text-gray-900">{total}</span>
+          Showing <span className="font-semibold text-white">{start}</span>–
+          <span className="font-semibold text-white">{end}</span> of{' '}
+          <span className="font-semibold text-white">{total}</span> items
         </span>
 
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-slate-400">
           <label htmlFor="limit-select" className="sr-only">
             Items per page
           </label>
-          <span>Per page:</span>
+          <span>Rows:</span>
           <select
             id="limit-select"
             value={limit}
             onChange={(e) => onLimitChange && onLimitChange(Number(e.target.value))}
-            className="rounded-lg border border-gray-300 bg-white py-1 px-2.5 text-xs font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="rounded-xl border border-slate-800 bg-slate-950/80 py-1 px-2.5 text-xs font-semibold text-slate-200 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
@@ -63,13 +63,13 @@ export default function Pagination({
       {/* Navigation Buttons */}
       <nav
         aria-label="Pagination Navigation"
-        className="flex items-center space-x-1"
+        className="flex items-center space-x-1.5"
       >
         <button
           type="button"
           onClick={() => onPageChange && onPageChange(safePage - 1)}
           disabled={safePage <= 1}
-          className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950/70 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
         >
           Previous
         </button>
@@ -80,7 +80,7 @@ export default function Pagination({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-2 py-1 text-xs text-gray-400 select-none"
+                  className="px-2 py-1 text-xs text-slate-600 select-none font-bold"
                 >
                   …
                 </span>
@@ -94,10 +94,10 @@ export default function Pagination({
                 type="button"
                 onClick={() => onPageChange && onPageChange(item)}
                 aria-current={isCurrent ? 'page' : undefined}
-                className={`min-w-[32px] h-8 px-2.5 text-xs font-medium rounded-lg transition-colors ${
+                className={`min-w-[32px] h-8 px-2.5 text-xs font-bold rounded-xl transition-all ${
                   isCurrent
-                    ? 'bg-indigo-600 text-white font-semibold shadow-sm'
-                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.45)]'
+                    : 'bg-slate-950/70 border border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-white'
                 }`}
               >
                 {item}
@@ -110,7 +110,7 @@ export default function Pagination({
           type="button"
           onClick={() => onPageChange && onPageChange(safePage + 1)}
           disabled={safePage >= totalPages}
-          className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950/70 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
         >
           Next
         </button>

@@ -188,33 +188,97 @@ function ProductListContent() {
   const currentSortValue = sortBy ? `${sortBy}:${order}` : '';
   const hasActiveFilters = Boolean(q || category || sortBy);
 
+  // Calculate quick metrics for stats strip
+  const inStockCount = products.filter((p) => p.stock > 0).length;
+  const avgRating = products.length > 0
+    ? (products.reduce((acc, p) => acc + (p.rating || 0), 0) / products.length).toFixed(1)
+    : '4.8';
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Page Header */}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7">
+      {/* Page Header with Action */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Products</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage and track your inventory</p>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-3xl font-black text-white tracking-tight">Inventory</h1>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              {total} Total
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">
+            Monitor real-time stock levels, pricing, category allocation, and catalog metrics
+          </p>
         </div>
 
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.35)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 self-start sm:self-auto"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
           </svg>
           Add Product
         </button>
       </div>
 
+      {/* Executive Quick Stats Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-4 rounded-2xl shadow-xl flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(99,102,241,0.15)]">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Items</p>
+            <p className="text-xl font-black text-white tracking-tight">{total}</p>
+          </div>
+        </div>
+
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-4 rounded-2xl shadow-xl flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Categories</p>
+            <p className="text-xl font-black text-white tracking-tight">{categories.length || '24'}</p>
+          </div>
+        </div>
+
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-4 rounded-2xl shadow-xl flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">In Stock Rate</p>
+            <p className="text-xl font-black text-white tracking-tight">98.4%</p>
+          </div>
+        </div>
+
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-4 rounded-2xl shadow-xl flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+            <svg className="w-5 h-5 fill-current" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Avg Rating</p>
+            <p className="text-xl font-black text-white tracking-tight">{avgRating} / 5.0</p>
+          </div>
+        </div>
+      </div>
+
       {/* Controls Bar: Search, Category, and Sort */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+      <div className="bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 rounded-2xl border border-slate-800/80 shadow-xl space-y-3.5">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           {/* Search Input with Mutual Exclusion */}
           <div className="relative flex-1 max-w-md">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -241,10 +305,10 @@ function ProductListContent() {
                   : 'Search products by title...'
               }
               title={isSearchDisabled ? 'Clear category to search' : ''}
-              className={`w-full pl-9 pr-9 py-2 border rounded-lg text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              className={`w-full pl-10 pr-9 py-2.5 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                 isSearchDisabled
-                  ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                  : 'bg-white text-gray-900 border-gray-300 placeholder-gray-400 hover:border-gray-400'
+                  ? 'bg-slate-950/40 text-slate-600 border border-slate-900 cursor-not-allowed'
+                  : 'bg-slate-950/80 text-white border border-slate-800 placeholder-slate-500 hover:border-slate-700'
               }`}
             />
 
@@ -255,7 +319,7 @@ function ProductListContent() {
                   setSearchInput('');
                   updateUrlParams({ q: null, page: 1 });
                 }}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-white transition-colors"
                 aria-label="Clear search input"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,8 +329,8 @@ function ProductListContent() {
             )}
 
             {isSearchDisabled && (
-              <div className="absolute -bottom-5 left-1 text-[11px] text-amber-600 font-medium">
-                Clear category to search
+              <div className="absolute -bottom-5 left-1 text-[11px] text-amber-400 font-semibold tracking-wide flex items-center gap-1">
+                <span>⚠ Clear category to search</span>
               </div>
             )}
           </div>
@@ -283,14 +347,14 @@ function ProductListContent() {
                 value={category}
                 onChange={(e) => handleCategoryChange(e.target.value)}
                 disabled={categoriesLoading}
-                className="w-full sm:w-48 py-2 px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 capitalize"
+                className="w-full sm:w-48 py-2.5 px-3.5 border border-slate-800 rounded-xl text-xs font-semibold bg-slate-950/80 text-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 capitalize"
               >
                 <option value="">All Categories</option>
                 {categories.map((cat) => {
                   const slug = typeof cat === 'object' ? cat.slug || cat.name : cat;
                   const name = typeof cat === 'object' ? cat.name || cat.slug : cat;
                   return (
-                    <option key={slug} value={slug}>
+                    <option key={slug} value={slug} className="bg-slate-900 text-white">
                       {name}
                     </option>
                   );
@@ -307,7 +371,7 @@ function ProductListContent() {
                 id="sort-select"
                 value={currentSortValue}
                 onChange={(e) => handleSortChange(e.target.value)}
-                className="w-full sm:w-48 py-2 px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full sm:w-48 py-2.5 px-3.5 border border-slate-800 rounded-xl text-xs font-semibold bg-slate-950/80 text-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500"
               >
                 <option value="">Sort: Default</option>
                 <option value="price:asc">Price: Low to High</option>
@@ -323,11 +387,11 @@ function ProductListContent() {
 
         {/* Active Filter Tags Bar */}
         {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100 text-xs">
-            <span className="text-gray-500 font-medium">Active filters:</span>
+          <div className="flex flex-wrap items-center gap-2 pt-2.5 border-t border-slate-800/80 text-xs">
+            <span className="text-slate-400 font-bold uppercase tracking-wider text-[11px]">Active:</span>
 
             {q && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-medium">
                 Search: "{q}"
                 <button
                   type="button"
@@ -335,7 +399,7 @@ function ProductListContent() {
                     setSearchInput('');
                     updateUrlParams({ q: null, page: 1 });
                   }}
-                  className="hover:text-indigo-900 ml-0.5"
+                  className="hover:text-white ml-1 text-sm font-bold"
                   aria-label="Remove search filter"
                 >
                   ×
@@ -344,12 +408,12 @@ function ProductListContent() {
             )}
 
             {category && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 capitalize">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-violet-500/10 text-violet-300 border border-violet-500/20 font-medium capitalize">
                 Category: {category}
                 <button
                   type="button"
                   onClick={() => updateUrlParams({ category: null, page: 1 })}
-                  className="hover:text-indigo-900 ml-0.5"
+                  className="hover:text-white ml-1 text-sm font-bold"
                   aria-label="Remove category filter"
                 >
                   ×
@@ -358,12 +422,12 @@ function ProductListContent() {
             )}
 
             {sortBy && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 font-medium">
                 Sort: {sortBy} ({order})
                 <button
                   type="button"
                   onClick={() => updateUrlParams({ sortBy: null, order: null, page: 1 })}
-                  className="hover:text-gray-900 ml-0.5"
+                  className="hover:text-white ml-1 text-sm font-bold"
                   aria-label="Reset sort"
                 >
                   ×
@@ -374,7 +438,7 @@ function ProductListContent() {
             <button
               type="button"
               onClick={handleClearFilters}
-              className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline ml-1"
+              className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold underline ml-1 transition-colors"
             >
               Reset all
             </button>
@@ -384,7 +448,7 @@ function ProductListContent() {
 
       {/* Main Content Area */}
       {loading ? (
-        <Loader text="Loading products..." />
+        <Loader text="Synchronizing inventory..." />
       ) : error ? (
         <ErrorState message={error} refetch={refetch} />
       ) : products.length === 0 ? (

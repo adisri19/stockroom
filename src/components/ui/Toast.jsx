@@ -6,7 +6,7 @@ export default function Toast({ message, type = 'success', onClose }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, 3000);
+    }, 3200);
     return () => clearTimeout(timer);
   }, [onClose]);
 
@@ -18,11 +18,13 @@ export default function Toast({ message, type = 'success', onClose }) {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg border border-gray-200 text-sm font-medium animate-in slide-in-from-bottom-5 duration-200 max-w-sm"
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-3.5 px-4 py-3.5 bg-slate-900/95 backdrop-blur-2xl rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] border border-slate-700/70 text-sm font-medium animate-in slide-in-from-bottom-5 duration-200 max-w-sm"
     >
       <div
-        className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-          isSuccess ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
+        className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${
+          isSuccess
+            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+            : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
         }`}
       >
         {isSuccess ? (
@@ -36,15 +38,15 @@ export default function Toast({ message, type = 'success', onClose }) {
         )}
       </div>
 
-      <span className="text-gray-800 flex-1">{message}</span>
+      <span className="text-slate-100 font-semibold text-xs leading-snug flex-1">{message}</span>
 
       <button
         type="button"
         onClick={onClose}
-        className="text-gray-400 hover:text-gray-600 p-0.5 rounded transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        className="text-slate-500 hover:text-slate-300 p-1 rounded-lg transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500"
         aria-label="Dismiss notification"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>

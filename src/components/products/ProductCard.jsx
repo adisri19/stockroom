@@ -12,10 +12,10 @@ export default function ProductCard({ product, onEdit, onDelete }) {
     '';
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col gap-3">
-      <div className="flex gap-3">
+    <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-4 shadow-xl flex flex-col gap-3.5 hover:border-indigo-500/30 transition-all duration-200">
+      <div className="flex gap-3.5">
         {/* Thumbnail with fallback */}
-        <div className="w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center relative">
+        <div className="w-16 h-16 rounded-xl bg-slate-950/80 border border-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center relative">
           {thumbnail ? (
             <>
               <img
@@ -29,14 +29,14 @@ export default function ProductCard({ product, onEdit, onDelete }) {
                   if (fallback) fallback.classList.remove('hidden');
                 }}
               />
-              <div className="card-img-fallback hidden w-full h-full flex items-center justify-center bg-gray-50 text-gray-400">
-                <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="card-img-fallback hidden w-full h-full flex items-center justify-center bg-slate-950 text-slate-500">
+                <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
             </>
           ) : (
-            <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           )}
@@ -45,12 +45,12 @@ export default function ProductCard({ product, onEdit, onDelete }) {
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize border border-gray-200 truncate">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-violet-500/10 text-violet-300 capitalize border border-violet-500/20 truncate">
               {product.category || 'Uncategorized'}
             </span>
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">
               <svg
-                className="w-3 h-3 fill-current text-amber-500"
+                className="w-3 h-3 fill-current text-amber-400"
                 viewBox="0 0 20 20"
               >
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -59,34 +59,34 @@ export default function ProductCard({ product, onEdit, onDelete }) {
             </span>
           </div>
 
-          <h3 className="mt-1 font-semibold text-gray-900 text-sm truncate">
+          <h3 className="mt-1 font-semibold text-slate-100 text-sm truncate">
             <Link
               href={`/products/${product.id}`}
-              className="hover:text-indigo-600 transition-colors"
+              className="hover:text-indigo-400 transition-colors"
             >
               {product.title}
             </Link>
           </h3>
 
           {product.brand && (
-            <p className="text-xs text-gray-400 truncate">{product.brand}</p>
+            <p className="text-xs text-slate-400 truncate">{product.brand}</p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-sm">
+      <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 text-sm">
         <div>
-          <span className="font-bold text-gray-900 text-base">{formattedPrice}</span>
-          <span className="ml-2 text-xs text-gray-500">
+          <span className="font-bold text-white text-base tracking-tight">{formattedPrice}</span>
+          <span className="ml-2 text-xs text-slate-400">
             ({product.stock} in stock)
           </span>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => onEdit && onEdit(product)}
-            className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="p-1.5 text-slate-400 hover:text-indigo-300 hover:bg-indigo-500/20 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
             aria-label={`Edit ${product.title}`}
           >
             <svg
@@ -106,7 +106,7 @@ export default function ProductCard({ product, onEdit, onDelete }) {
           <button
             type="button"
             onClick={() => onDelete && onDelete(product)}
-            className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500/50"
             aria-label={`Delete ${product.title}`}
           >
             <svg

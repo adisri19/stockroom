@@ -8,7 +8,6 @@ export default function DeleteModal({ product, onClose, onSuccess }) {
   const [error, setError] = useState('');
   const cancelButtonRef = useRef(null);
 
-  // Close modal on Escape key press
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && !isDeleting) {
@@ -19,7 +18,6 @@ export default function DeleteModal({ product, onClose, onSuccess }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isDeleting, onClose]);
 
-  // Autofocus cancel button on open for keyboard safety
   useEffect(() => {
     cancelButtonRef.current?.focus();
   }, []);
@@ -61,13 +59,13 @@ export default function DeleteModal({ product, onClose, onSuccess }) {
       aria-modal="true"
       aria-labelledby="delete-dialog-title"
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity"
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4 transition-opacity"
     >
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0">
+      <div className="bg-slate-900 border border-slate-800 shadow-[0_0_60px_-15px_rgba(244,63,94,0.3)] w-full max-w-md rounded-3xl overflow-hidden animate-in zoom-in-95 duration-200 p-6 sm:p-7 space-y-5">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center flex-shrink-0 shadow-[0_0_20px_rgba(244,63,94,0.25)]">
             <svg
-              className="w-5 h-5"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -83,35 +81,35 @@ export default function DeleteModal({ product, onClose, onSuccess }) {
           <div>
             <h3
               id="delete-dialog-title"
-              className="text-lg font-bold text-gray-900"
+              className="text-lg font-bold text-white tracking-tight"
             >
               Delete Product
             </h3>
-            <p className="text-xs text-gray-500">This action cannot be undone</p>
+            <p className="text-xs text-slate-400">Irreversible catalog modification</p>
           </div>
         </div>
 
-        <p className="text-sm text-gray-600 leading-normal">
-          Are you sure you want to delete{' '}
-          <span className="font-semibold text-gray-900">
+        <p className="text-sm text-slate-300 leading-relaxed">
+          Are you sure you want to permanently remove{' '}
+          <span className="font-bold text-white bg-slate-800/80 px-1.5 py-0.5 rounded-md border border-slate-700/60">
             "{product.title}"
-          </span>
-          ? This product will be removed from your catalog.
+          </span>{' '}
+          from the inventory?
         </p>
 
         {error && (
-          <div className="p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200">
+          <div className="p-3 bg-rose-500/10 text-rose-300 text-xs rounded-xl border border-rose-500/30">
             {error}
           </div>
         )}
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800/80">
           <button
             ref={cancelButtonRef}
             type="button"
             onClick={onClose}
             disabled={isDeleting}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="px-4 py-2.5 text-sm font-semibold text-slate-300 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-600 disabled:opacity-50"
           >
             Cancel
           </button>
@@ -119,12 +117,12 @@ export default function DeleteModal({ product, onClose, onSuccess }) {
             type="button"
             onClick={handleConfirmDelete}
             disabled={isDeleting}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 rounded-xl shadow-[0_0_20px_rgba(244,63,94,0.4)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isDeleting ? (
               <>
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Deleting...
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Removing...
               </>
             ) : (
               'Confirm Delete'
