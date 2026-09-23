@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import ProtectedRoute from '../../components/auth/ProtectedRoute';
 import ProductTable from '../../components/products/ProductTable';
 import ProductCard from '../../components/products/ProductCard';
+import ProductForm from '../../components/products/ProductForm';
 import Pagination from '../../components/ui/Pagination';
 import Loader from '../../components/ui/Loader';
 import useProducts from '../../hooks/useProducts';
@@ -18,7 +19,9 @@ function ProductListContent() {
 
   const {
     products,
+    setProducts,
     total,
+    setTotal,
     loading,
     error,
     page,
@@ -32,6 +35,9 @@ function ProductListContent() {
   // Categories list
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+
+  // Modal state
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Local state for instant input feedback, debounced by 400ms
   const [searchInput, setSearchInput] = useState(q);
@@ -79,7 +85,6 @@ function ProductListContent() {
   };
 
   // Push debounced search query to URL as single source of truth
-  // Mutual exclusion: typing in search clears category!
   useEffect(() => {
     const trimmed = debouncedQuery.trim();
     if (trimmed !== q) {
@@ -99,7 +104,6 @@ function ProductListContent() {
   }, [debouncedQuery]);
 
   // Handle category selection
-  // Mutual exclusion: selecting category clears search!
   const handleCategoryChange = (selectedCategory) => {
     if (selectedCategory) {
       setSearchInput('');
@@ -130,16 +134,34 @@ function ProductListContent() {
     });
   };
 
+  const handleAddSuccess = (newProduct) => {
+    setProducts((prev) => [newProduct, ...prev]);
+    setTotal((prev) => prev + 1);
+    setIsAddModalOpen(false);
+  };
+
   const isSearchDisabled = Boolean(category);
   const currentSortValue = sortBy ? `${sortBy}:${order}` : '';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Products</h1>
           <p className="text-sm text-gray-500 mt-1">Manage and track your inventory</p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsAddModalOpen(true)}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 self-start sm:self-auto"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Product
+        </button>
       </div>
 
       {/* Controls Bar: Search, Category, and Sort */}
@@ -253,6 +275,7 @@ function ProductListContent() {
         </div>
       </div>
 
+      {/* Main Content Area */}
       {loading ? (
         <Loader text="Loading products..." />
       ) : error ? (
@@ -287,6 +310,16 @@ function ProductListContent() {
             onLimitChange={(newLimit) => updateUrlParams({ limit: newLimit, page: 1 })}
           />
         </div>
+      )}
+
+      {/* Add Product Modal */}
+      {isAddModalOpen && (
+        <ProductForm
+          product={null}
+          categories={categories}
+          onSuccess={handleAddSuccess}
+          onClose={() => setIsAddModalOpen(false)}
+        />
       )}
     </div>
   );
