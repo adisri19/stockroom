@@ -11,6 +11,7 @@ import Pagination from '../../components/ui/Pagination';
 import Loader from '../../components/ui/Loader';
 import ErrorState from '../../components/ui/ErrorState';
 import EmptyState from '../../components/ui/EmptyState';
+import Toast from '../../components/ui/Toast';
 import useProducts from '../../hooks/useProducts';
 import useDebounce from '../../hooks/useDebounce';
 import { getCategories } from '../../api/categories';
@@ -44,6 +45,9 @@ function ProductListContent() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
+
+  // Toast feedback state
+  const [toast, setToast] = useState(null);
 
   // Local state for instant input feedback, debounced by 400ms
   const [searchInput, setSearchInput] = useState(q);
@@ -145,6 +149,7 @@ function ProductListContent() {
     setProducts((prev) => [newProduct, ...prev]);
     setTotal((prev) => prev + 1);
     setIsAddModalOpen(false);
+    setToast({ message: `"${newProduct.title}" added to inventory`, type: 'success' });
   };
 
   // Optimistic Edit Mutation: Replace matching product, no re-fetch
@@ -153,13 +158,19 @@ function ProductListContent() {
       prev.map((item) => (item.id === updatedProduct.id ? updatedProduct : item))
     );
     setEditingProduct(null);
+    setToast({ message: `"${updatedProduct.title}" updated successfully`, type: 'success' });
   };
 
   // Optimistic Delete Mutation: Remove matching product, decrement total by 1
   const handleDeleteSuccess = (deletedId) => {
+    const deletedItem = products.find((item) => item.id === deletedId);
     setProducts((prev) => prev.filter((item) => item.id !== deletedId));
     setTotal((prev) => Math.max(0, prev - 1));
     setDeletingProduct(null);
+    setToast({
+      message: deletedItem ? `"${deletedItem.title}" deleted` : 'Product deleted successfully',
+      type: 'success',
+    });
   };
 
   const handleClearFilters = () => {
@@ -374,6 +385,15 @@ function ProductListContent() {
           product={deletingProduct}
           onClose={() => setDeletingProduct(null)}
           onSuccess={handleDeleteSuccess}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>
