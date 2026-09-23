@@ -186,6 +186,7 @@ function ProductListContent() {
 
   const isSearchDisabled = Boolean(category);
   const currentSortValue = sortBy ? `${sortBy}:${order}` : '';
+  const hasActiveFilters = Boolean(q || category || sortBy);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -209,114 +210,176 @@ function ProductListContent() {
       </div>
 
       {/* Controls Bar: Search, Category, and Sort */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        {/* Search Input with Mutual Exclusion */}
-        <div className="relative flex-1 max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+          {/* Search Input with Mutual Exclusion */}
+          <div className="relative flex-1 max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+
+            <input
+              type="text"
+              value={isSearchDisabled ? '' : searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              disabled={isSearchDisabled}
+              placeholder={
+                isSearchDisabled
+                  ? 'Clear category to search'
+                  : 'Search products by title...'
+              }
+              title={isSearchDisabled ? 'Clear category to search' : ''}
+              className={`w-full pl-9 pr-9 py-2 border rounded-lg text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                isSearchDisabled
+                  ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                  : 'bg-white text-gray-900 border-gray-300 placeholder-gray-400 hover:border-gray-400'
+              }`}
+            />
+
+            {!isSearchDisabled && searchInput && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchInput('');
+                  updateUrlParams({ q: null, page: 1 });
+                }}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                aria-label="Clear search input"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+
+            {isSearchDisabled && (
+              <div className="absolute -bottom-5 left-1 text-[11px] text-amber-600 font-medium">
+                Clear category to search
+              </div>
+            )}
           </div>
 
-          <input
-            type="text"
-            value={isSearchDisabled ? '' : searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            disabled={isSearchDisabled}
-            placeholder={
-              isSearchDisabled
-                ? 'Clear category to search'
-                : 'Search products by title...'
-            }
-            title={isSearchDisabled ? 'Clear category to search' : ''}
-            className={`w-full pl-9 pr-9 py-2 border rounded-lg text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              isSearchDisabled
-                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                : 'bg-white text-gray-900 border-gray-300 placeholder-gray-400 hover:border-gray-400'
-            }`}
-          />
+          {/* Filters: Category & Sort */}
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
+            {/* Category Dropdown */}
+            <div className="w-full sm:w-auto">
+              <label htmlFor="category-filter" className="sr-only">
+                Filter by category
+              </label>
+              <select
+                id="category-filter"
+                value={category}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+                disabled={categoriesLoading}
+                className="w-full sm:w-48 py-2 px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 capitalize"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => {
+                  const slug = typeof cat === 'object' ? cat.slug || cat.name : cat;
+                  const name = typeof cat === 'object' ? cat.name || cat.slug : cat;
+                  return (
+                    <option key={slug} value={slug}>
+                      {name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
 
-          {!isSearchDisabled && searchInput && (
+            {/* Sort Dropdown */}
+            <div className="w-full sm:w-auto">
+              <label htmlFor="sort-select" className="sr-only">
+                Sort by
+              </label>
+              <select
+                id="sort-select"
+                value={currentSortValue}
+                onChange={(e) => handleSortChange(e.target.value)}
+                className="w-full sm:w-48 py-2 px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="">Sort: Default</option>
+                <option value="price:asc">Price: Low to High</option>
+                <option value="price:desc">Price: High to Low</option>
+                <option value="rating:desc">Rating: High to Low</option>
+                <option value="rating:asc">Rating: Low to High</option>
+                <option value="title:asc">Title: A to Z</option>
+                <option value="title:desc">Title: Z to A</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Active Filter Tags Bar */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100 text-xs">
+            <span className="text-gray-500 font-medium">Active filters:</span>
+
+            {q && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Search: "{q}"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchInput('');
+                    updateUrlParams({ q: null, page: 1 });
+                  }}
+                  className="hover:text-indigo-900 ml-0.5"
+                  aria-label="Remove search filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+
+            {category && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 capitalize">
+                Category: {category}
+                <button
+                  type="button"
+                  onClick={() => updateUrlParams({ category: null, page: 1 })}
+                  className="hover:text-indigo-900 ml-0.5"
+                  aria-label="Remove category filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+
+            {sortBy && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                Sort: {sortBy} ({order})
+                <button
+                  type="button"
+                  onClick={() => updateUrlParams({ sortBy: null, order: null, page: 1 })}
+                  className="hover:text-gray-900 ml-0.5"
+                  aria-label="Reset sort"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+
             <button
               type="button"
-              onClick={() => {
-                setSearchInput('');
-                updateUrlParams({ q: null, page: 1 });
-              }}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-              aria-label="Clear search input"
+              onClick={handleClearFilters}
+              className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline ml-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Reset all
             </button>
-          )}
-
-          {isSearchDisabled && (
-            <div className="absolute -bottom-5 left-1 text-[11px] text-amber-600 font-medium">
-              Clear category to search
-            </div>
-          )}
-        </div>
-
-        {/* Filters: Category & Sort */}
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
-          {/* Category Dropdown */}
-          <div className="w-full sm:w-auto">
-            <label htmlFor="category-filter" className="sr-only">
-              Filter by category
-            </label>
-            <select
-              id="category-filter"
-              value={category}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              disabled={categoriesLoading}
-              className="w-full sm:w-48 py-2 px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 capitalize"
-            >
-              <option value="">All Categories</option>
-              {categories.map((cat) => {
-                const slug = typeof cat === 'object' ? cat.slug || cat.name : cat;
-                const name = typeof cat === 'object' ? cat.name || cat.slug : cat;
-                return (
-                  <option key={slug} value={slug}>
-                    {name}
-                  </option>
-                );
-              })}
-            </select>
           </div>
-
-          {/* Sort Dropdown */}
-          <div className="w-full sm:w-auto">
-            <label htmlFor="sort-select" className="sr-only">
-              Sort by
-            </label>
-            <select
-              id="sort-select"
-              value={currentSortValue}
-              onChange={(e) => handleSortChange(e.target.value)}
-              className="w-full sm:w-48 py-2 px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="">Sort: Default</option>
-              <option value="price:asc">Price: Low to High</option>
-              <option value="price:desc">Price: High to Low</option>
-              <option value="rating:desc">Rating: High to Low</option>
-              <option value="rating:asc">Rating: Low to High</option>
-              <option value="title:asc">Title: A to Z</option>
-              <option value="title:desc">Title: Z to A</option>
-            </select>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Main Content Area */}
