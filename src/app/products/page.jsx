@@ -9,6 +9,8 @@ import ProductForm from '../../components/products/ProductForm';
 import DeleteModal from '../../components/products/DeleteModal';
 import Pagination from '../../components/ui/Pagination';
 import Loader from '../../components/ui/Loader';
+import ErrorState from '../../components/ui/ErrorState';
+import EmptyState from '../../components/ui/EmptyState';
 import useProducts from '../../hooks/useProducts';
 import useDebounce from '../../hooks/useDebounce';
 import { getCategories } from '../../api/categories';
@@ -25,6 +27,7 @@ function ProductListContent() {
     setTotal,
     loading,
     error,
+    refetch,
     page,
     limit,
     q,
@@ -157,6 +160,17 @@ function ProductListContent() {
     setProducts((prev) => prev.filter((item) => item.id !== deletedId));
     setTotal((prev) => Math.max(0, prev - 1));
     setDeletingProduct(null);
+  };
+
+  const handleClearFilters = () => {
+    setSearchInput('');
+    updateUrlParams({
+      q: null,
+      category: null,
+      sortBy: null,
+      order: null,
+      page: 1,
+    });
   };
 
   const isSearchDisabled = Boolean(category);
@@ -298,19 +312,13 @@ function ProductListContent() {
       {loading ? (
         <Loader text="Loading products..." />
       ) : error ? (
-        <div className="p-4 bg-red-50 text-red-700 rounded-xl border border-red-200">
-          {error}
-        </div>
+        <ErrorState message={error} refetch={refetch} />
       ) : products.length === 0 ? (
-        <div className="p-12 text-center bg-white rounded-xl border border-gray-200">
-          <p className="text-gray-500 text-sm">
-            {q
-              ? `No products found for "${q}"`
-              : category
-              ? `No products found in category "${category}"`
-              : 'No products found'}
-          </p>
-        </div>
+        <EmptyState
+          q={q}
+          category={category}
+          onClear={handleClearFilters}
+        />
       ) : (
         <div className="space-y-4">
           <ProductTable
