@@ -49,18 +49,32 @@ export default function ProductTable({ products, onEdit, onDelete }) {
                   key={product.id}
                   className="even:bg-gray-50/60 hover:bg-gray-100/80 transition-colors"
                 >
-                  {/* 1. Image (40x40) */}
+                  {/* 1. Image (40x40) with Fallback Placeholder */}
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center flex-shrink-0 relative">
                       {thumbnail ? (
-                        <img
-                          src={thumbnail}
-                          alt={product.title}
-                          className="w-10 h-10 object-cover"
-                          loading="lazy"
-                        />
+                        <>
+                          <img
+                            src={thumbnail}
+                            alt={product.title}
+                            className="w-10 h-10 object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.parentElement.querySelector('.img-fallback');
+                              if (fallback) fallback.classList.remove('hidden');
+                            }}
+                          />
+                          <div className="img-fallback hidden w-full h-full flex items-center justify-center bg-gray-50 text-gray-400">
+                            <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        </>
                       ) : (
-                        <span className="text-xs text-gray-400">N/A</span>
+                        <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
                       )}
                     </div>
                   </td>
@@ -127,7 +141,7 @@ export default function ProductTable({ products, onEdit, onDelete }) {
                       <button
                         type="button"
                         onClick={() => onEdit && onEdit(product)}
-                        className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         aria-label={`Edit ${product.title}`}
                         title="Edit product"
                       >
@@ -149,7 +163,7 @@ export default function ProductTable({ products, onEdit, onDelete }) {
                       <button
                         type="button"
                         onClick={() => onDelete && onDelete(product)}
-                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
                         aria-label={`Delete ${product.title}`}
                         title="Delete product"
                       >
