@@ -36,8 +36,9 @@ function ProductListContent() {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
-  // Modal state
+  // Modal states for Add and Edit
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
 
   // Local state for instant input feedback, debounced by 400ms
   const [searchInput, setSearchInput] = useState(q);
@@ -134,10 +135,19 @@ function ProductListContent() {
     });
   };
 
+  // Optimistic Add Mutation: Prepend new product, increment total by 1
   const handleAddSuccess = (newProduct) => {
     setProducts((prev) => [newProduct, ...prev]);
     setTotal((prev) => prev + 1);
     setIsAddModalOpen(false);
+  };
+
+  // Optimistic Edit Mutation: Replace matching product, no re-fetch
+  const handleEditSuccess = (updatedProduct) => {
+    setProducts((prev) =>
+      prev.map((item) => (item.id === updatedProduct.id ? updatedProduct : item))
+    );
+    setEditingProduct(null);
   };
 
   const isSearchDisabled = Boolean(category);
@@ -294,11 +304,18 @@ function ProductListContent() {
         </div>
       ) : (
         <div className="space-y-4">
-          <ProductTable products={products} />
+          <ProductTable
+            products={products}
+            onEdit={(prod) => setEditingProduct(prod)}
+          />
 
           <div className="grid grid-cols-1 gap-4 md:hidden">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onEdit={(prod) => setEditingProduct(prod)}
+              />
             ))}
           </div>
 
@@ -319,6 +336,16 @@ function ProductListContent() {
           categories={categories}
           onSuccess={handleAddSuccess}
           onClose={() => setIsAddModalOpen(false)}
+        />
+      )}
+
+      {/* Edit Product Modal */}
+      {editingProduct && (
+        <ProductForm
+          product={editingProduct}
+          categories={categories}
+          onSuccess={handleEditSuccess}
+          onClose={() => setEditingProduct(null)}
         />
       )}
     </div>
